@@ -1,52 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Users, Server, TrendingUp } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import Calendar from "@/components/Calendar";
 import { CalendarTodo } from "@/lib/types";
 import CalendarModal from "@/components/CalendarModal";
-
-/* =========================
-   ✅ TYPES
-========================= */
-
-interface StatCard {
-  title: string;
-  value: number;
-  icon: React.ElementType;
-  description: string;
-}
 
 interface Activity {
   id: string;
   message: string;
   date: string;
 }
-
-/* =========================
-   ✅ MOCK DATA (Replace with API later)
-========================= */
-
-const mockStats: StatCard[] = [
-  {
-    title: "Total Users",
-    value: 124,
-    icon: Users,
-    description: "Active system users",
-  },
-  {
-    title: "Terminal Nodes",
-    value: 32,
-    icon: Server,
-    description: "Connected nodes",
-  },
-  {
-    title: "System Growth",
-    value: 18,
-    icon: TrendingUp,
-    description: "Growth this month (%)",
-  },
-];
 
 const mockActivity: Activity[] = [
   {
@@ -66,24 +30,24 @@ const mockActivity: Activity[] = [
   },
 ];
 
-/* =========================
-   ✅ COMPONENT
-========================= */
-
 export default function Dashboard() {
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
-const [todos, setTodos] = useState<CalendarTodo[]>([]);
+  const [todos, setTodos] = useState<CalendarTodo[]>(() => {
+    if (typeof window === "undefined") return [];
 
-// Load
-useEffect(() => {
-  const stored = localStorage.getItem("calendar-todos");
-  if (stored) setTodos(JSON.parse(stored));
-}, []);
+    try {
+      const stored = localStorage.getItem("calendar-todos");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      console.error("Invalid storage data");
+      return [];
+    }
+  });
 
-// Save
-useEffect(() => {
-  localStorage.setItem("calendar-todos", JSON.stringify(todos));
-}, [todos]);
+  useEffect(() => {
+    localStorage.setItem("calendar-todos", JSON.stringify(todos));
+  }, [todos]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Analytics Section */}

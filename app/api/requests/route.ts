@@ -50,43 +50,6 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ message: "Login successful" });
-  } else if (reqType === "fibervu-login") {
-    const targetUrl = "https://110.93.79.226/api/inca-users/login";
-
-    try {
-      const payload = await req.json();
-      const res = await fetch(targetUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      console.log("FIBERVU DATA:", data);
-      if (!res.ok) {
-        return NextResponse.json(
-          { error: "Login failed", details: data },
-          { status: res.status },
-        );
-      }
-
-      // Assuming the server returns a token, you can send it back to your frontend
-      return NextResponse.json(data, { status: 200 });
-    } catch (error: unknown) {
-      console.error("Login Request Error:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "An unknown error occurred";
-
-      return NextResponse.json(
-        {
-          error: "Failed to connect to authentication server",
-          message: errorMessage,
-        },
-        { status: 500 },
-      );
-    }
   } else if (reqType === "logout") {
     const cookieStore = await cookies();
     cookieStore.delete("auth_token");
