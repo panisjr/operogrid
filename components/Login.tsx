@@ -109,7 +109,7 @@ export default function Login() {
 
         {/* Footer */}
         <p className="text-center text-sm text-[#9C6B6F] mt-8">
-          © {new Date().getFullYear()} NARJ
+          © {new Date().getFullYear()} NARj
         </p>
       </div>
     </div>

@@ -32,7 +32,7 @@ export default function Header() {
     }
   };
   return (
-    <header className="border-b border-[#FFD3D6] px-8 py-3.75 font-lexend">
+    <header className="bg-white border-b border-[#FFD3D6] px-8 py-3.75 font-lexend">
       <div className="flex items-center justify-between">
         {/* ================= LEFT SECTION ================= */}
         <div className="flex items-center gap-6">
