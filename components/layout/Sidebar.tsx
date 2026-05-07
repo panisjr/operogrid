@@ -12,7 +12,7 @@ import {
   Search,
   BarChart,
 } from "lucide-react";
-import { User } from "@/lib/types";
+import { SidebarProps } from "@/lib/types";
 import {
   Accordion,
   AccordionContent,
@@ -46,16 +46,14 @@ export const menuItems = [
     ],
   },
 ];
-interface SidebarProps {
-  currentUser: Partial<User> | null;
-}
-export default function Sidebar({ currentUser }: SidebarProps) {
+
+export default function Sidebar({ userMeta }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const filteredMenu = menuItems.filter(
-    (item) => !item.roles || item.roles.includes(currentUser?.role ?? ""),
-  );
+  // const filteredMenu = menuItems.filter(
+  //   (item) => !item.roles || item.roles.includes(userMeta?.role ?? ""),
+  // );
   return (
     <aside
       className={`
@@ -117,7 +115,7 @@ export default function Sidebar({ currentUser }: SidebarProps) {
           }
           className="space-y-1"
         >
-          {filteredMenu.map((item) => {
+          {menuItems.map((item) => {
             const hasSubMenu = item.subMenu?.length;
             const isActive =
               pathname === item.href ||
@@ -263,16 +261,16 @@ export default function Sidebar({ currentUser }: SidebarProps) {
       <div className="px-4 py-4 border-t border-[#FFD3D6]">
         <div className="flex items-center gap-3 bg-[#F9E6E4] p-3 rounded-xl">
           <div className="w-10 h-10 bg-[#FFB0B5] rounded-full flex items-center justify-center text-white font-semibold text-sm shadow">
-            {currentUser?.name?.charAt(0) ?? "U"}
+            {userMeta?.full_name?.charAt(0) ?? "U"}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-[#5A3E40] text-sm font-medium truncate">
-                {currentUser?.name}
+                {userMeta?.full_name}
               </p>
-              <p className="text-[#9C6B6F] text-xs capitalize">
-                {currentUser?.role}
-              </p>
+              {/* <p className="text-[#9C6B6F] text-xs capitalize">
+                {userMeta?.role}
+              </p> */}
             </div>
           )}
         </div>
