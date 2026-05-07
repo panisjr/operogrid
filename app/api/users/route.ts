@@ -1,27 +1,44 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { User } from "@/lib/types";
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  );
+
   try {
-    const filePath = path.join(process.cwd(),"public", "data", "users.json");
+    // Get session from request headers
+    const authHeader = req.headers.get("authorization");
 
-    const users: User[] = JSON.parse(
-      fs.readFileSync(filePath, "utf-8")
-    );
+    if (!authHeader) {
+      return NextResponse.json(
+        { success: false, message: "No authorization header" },
+        { status: 401 }
+      );
+    }
 
-    const safeUsers = users.map((u) => {
-      const {  ...rest } = u;
-      return rest;
+    const token = authHeader.replace("Bearer ", "");
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      return NextResponse.json(
+        { success: false, message: "Invalid user" },
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      user,
     });
-
-    return NextResponse.json(safeUsers);
-  } catch (error) {
-    console.error("Failed to read users:", error);
-
+  } catch{
     return NextResponse.json(
-      { message: "Failed to load users" },
+      { success: false, message: "Server error" },
       { status: 500 }
     );
   }
