@@ -3,8 +3,8 @@ export type Priority = "low" | "medium" | "high";
 export interface CalendarTodo {
   id: string;
   title: string;
-  date: string;          // ISO date
-  time?: string;         // "14:30"
+  date: string; // ISO date
+  time?: string; // "14:30"
   completed: boolean;
   important: boolean;
   priority: Priority;
@@ -16,4 +16,24 @@ export interface User {
   password: string;
   role: string;
   username: string;
+}
+
+export interface UserMeta {
+  email?: string;
+  email_verified?: boolean;
+  full_name?: string;
+  phone_verified?: boolean;
+  sub?: string;
+}
+
+// PROPS __________________________________________________________________________________________________________
+export interface SignInProps {
+  setFormType?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export interface SignUpProps {
+  setFormType?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface SidebarProps {
+  userMeta?: UserMeta;
 }
