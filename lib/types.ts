@@ -19,11 +19,13 @@ export interface User {
 }
 
 export interface UserMeta {
-  email?: string;
-  email_verified?: boolean;
-  full_name?: string;
-  phone_verified?: boolean;
-  sub?: string;
+  user_metadata: {
+    email?: string;
+    email_verified?: boolean;
+    full_name?: string;
+    phone_verified?: boolean;
+    sub?: string;
+  };
 }
 
 // PROPS __________________________________________________________________________________________________________
