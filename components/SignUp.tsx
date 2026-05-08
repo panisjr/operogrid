@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, User, Loader2, UserPlus } from "lucide-react";
 import { SignUpProps } from "@/lib/types";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SignUp({ setFormType }: SignUpProps) {
   const [fullName, setFullName] = useState<string>("");
@@ -13,42 +15,47 @@ export default function SignUp({ setFormType }: SignUpProps) {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  const supabase = createClient();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!fullName || !email || !password || !confirmPassword) {
       toast.warning("Please fill in all fields");
       return;
     }
-    setLoading(true);
 
     if (password !== confirmPassword) {
       toast.warning("Passwords do not match");
       return;
     }
 
+    setLoading(true);
+
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
         },
-        body: JSON.stringify({
-          fullName,
-          email,
-          password,
-        }),
       });
 
-      const result = await response.json();
-
-      if (!result.success) {
+      if (error) {
+        toast.error(error.message);
         setLoading(false);
-        toast.error(result.message);
         return;
       }
-      setLoading(false);
+
       toast.success("Account created successfully");
+
+      setLoading(false);
+
+      router.push("/dashboard");
     } catch {
       setLoading(false);
       toast.error("Something went wrong");
