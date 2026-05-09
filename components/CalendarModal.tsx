@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CalendarTodo, Priority } from "@/lib/types";
+import { CalendarTodo } from "@/lib/types";
 import DateDetailsDialog from "./DateDetailsDialog";
 
 interface CalendarModalProps {
@@ -26,13 +26,10 @@ export default function CalendarModal({
   const today = new Date();
 
   const [selectedDate, setSelectedDate] = useState<string>(
-    today.toISOString().split("T")[0],
+    today.toLocaleDateString("en-CA"),
   );
   const [isDateDialogOpen, setIsDateDialogOpen] = useState(false);
 
-  const [newTodo, setNewTodo] = useState("");
-  const [newTime, setNewTime] = useState("");
-  const [selectedPriority, setSelectedPriority] = useState<Priority>("low");
 
   const year = today.getFullYear();
   const month = today.getMonth();
@@ -54,24 +51,7 @@ export default function CalendarModal({
     return days;
   };
 
-  const handleAddTodo = (): void => {
-    if (!newTodo.trim()) return;
 
-    const newItem: CalendarTodo = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      title: newTodo,
-      date: selectedDate,
-      time: newTime,
-      priority: selectedPriority,
-      completed: false,
-      important: false,
-    };
-
-    setTodos((prev) => [...prev, newItem]);
-    setNewTodo("");
-    setNewTime("");
-    setSelectedPriority("low");
-  };
 
   return (
     <>
@@ -90,9 +70,9 @@ export default function CalendarModal({
                 {calendarDays().map((day, idx) => {
                   if (!day) return <div key={idx} className="h-24" />;
 
-                  const dateStr = new Date(year, month, day)
-                    .toISOString()
-                    .split("T")[0];
+                  const dateStr = new Date(year, month, day).toLocaleDateString(
+                    "en-CA",
+                  );
 
                   const dayTodos = todos.filter((t) => t.date === dateStr);
                   const totalCount = dayTodos.length;
@@ -146,19 +126,19 @@ export default function CalendarModal({
                       )}
 
                       {/* Preview of up to 2 tasks */}
-                   <div className="flex flex-col gap-1 overflow-hidden mt-1">
-  {dayTodos.slice(0, 2).map((todo) => {
-    const priorityColor =
-      todo.priority === "high"
-        ? "bg-red-400"
-        : todo.priority === "medium"
-        ? "bg-yellow-400"
-        : "bg-green-400";
+                      <div className="flex flex-col gap-1 overflow-hidden mt-1">
+                        {dayTodos.slice(0, 2).map((todo) => {
+                          const priorityColor =
+                            todo.priority === "high"
+                              ? "bg-red-400"
+                              : todo.priority === "medium"
+                                ? "bg-yellow-400"
+                                : "bg-green-400";
 
-    return (
-      <div
-        key={todo.id}
-        className={`
+                          return (
+                            <div
+                              key={todo.id}
+                              className={`
           flex items-center gap-1 text-[10px] truncate px-1 rounded
           ${
             todo.completed
@@ -166,84 +146,42 @@ export default function CalendarModal({
                 ? "line-through opacity-60 bg-white/20 text-white"
                 : "line-through opacity-60 bg-[#FFE5E7]/70 text-[#9C6B6F]"
               : isSelected
-              ? "bg-white/30 text-white"
-              : "bg-[#FFE5E7] text-[#5A3E40]"
+                ? "bg-white/30 text-white"
+                : "bg-[#FFE5E7] text-[#5A3E40]"
           }
         `}
-      >
-        {/* Priority Dot */}
-        <span
-          className={`w-1.5 h-1.5 rounded-full ${priorityColor}`}
-        />
+                            >
+                              {/* Priority Dot */}
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${priorityColor}`}
+                              />
 
-        {/* Title */}
-        <span className="truncate flex-1">
-          {todo.title}
-        </span>
+                              {/* Title */}
+                              <span className="truncate flex-1">
+                                {todo.title}
+                              </span>
 
-        {/* Important Star */}
-        {todo.important && (
-          <span className="text-[9px]">★</span>
-        )}
-      </div>
-    );
-  })}
+                              {/* Important Star */}
+                              {todo.important && (
+                                <span className="text-[9px]">★</span>
+                              )}
+                            </div>
+                          );
+                        })}
 
-  {dayTodos.length > 2 && (
-    <span
-      className={`text-[10px] opacity-70 ${
-        isSelected ? "text-white" : "text-[#9C6B6F]"
-      }`}
-    >
-      +{dayTodos.length - 2} more
-    </span>
-  )}
-</div>
+                        {dayTodos.length > 2 && (
+                          <span
+                            className={`text-[10px] opacity-70 ${
+                              isSelected ? "text-white" : "text-[#9C6B6F]"
+                            }`}
+                          >
+                            +{dayTodos.length - 2} more
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* ===== RIGHT PANEL ===== */}
-            <div className="bg-[#F9E6E4] p-6 rounded-2xl border border-[#FFD3D6]">
-              <h3 className="text-lg font-semibold text-[#5A3E40] mb-4">
-                Add Task ({selectedDate})
-              </h3>
-
-              <div className="space-y-3">
-                <input
-                  value={newTodo}
-                  onChange={(e) => setNewTodo(e.target.value)}
-                  placeholder="Task title..."
-                  className="w-full px-3 py-2 rounded-lg border border-[#FFD3D6]"
-                />
-
-                <input
-                  type="time"
-                  value={newTime}
-                  onChange={(e) => setNewTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-[#FFD3D6]"
-                />
-
-                <select
-                  value={selectedPriority}
-                  onChange={(e) =>
-                    setSelectedPriority(e.target.value as Priority)
-                  }
-                  className="w-full px-3 py-2 rounded-lg border border-[#FFD3D6]"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-
-                <button
-                  onClick={handleAddTodo}
-                  className="w-full bg-[#FFB0B5] text-white py-2 rounded-lg hover:bg-[#FFC6CA] transition"
-                >
-                  Add Task
-                </button>
               </div>
             </div>
           </div>
