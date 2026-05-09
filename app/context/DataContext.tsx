@@ -6,10 +6,12 @@ import React, { createContext, useContext, useState } from "react";
 interface DataContextType {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  currentUser: UserMeta;
+  setCurrentUser: React.Dispatch<React.SetStateAction<UserMeta>>;
 }
 interface DataProviderProps {
   children: React.ReactNode;
-  initialUser: UserMeta | null;
+  initialUser: UserMeta;
 }
 
 const DataContex = createContext<DataContextType | undefined>(undefined);
@@ -22,6 +24,8 @@ export function DataProvider({ children, initialUser }: DataProviderProps) {
     <DataContex.Provider
       value={{
         isLoading,
+        currentUser,
+        setCurrentUser,
         setIsLoading,
       }}
     >
@@ -30,11 +34,11 @@ export function DataProvider({ children, initialUser }: DataProviderProps) {
   );
 }
 
-export function useTodos() {
+export function useData() {
   const context = useContext(DataContex);
 
   if (!context) {
-    throw new Error("useTodos must be used inside DataProvider");
+    throw new Error("useData must be used inside DataProvider");
   }
 
   return context;

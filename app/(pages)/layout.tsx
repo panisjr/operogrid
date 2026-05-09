@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   return (
     <DataProvider initialUser={currentUser}>
       <div className="flex h-screen overflow-hidden bg-gray-50 font-lexend">
-        <Sidebar userMeta={user} />
+        <Sidebar />
         <div className="flex flex-col flex-1">
           <Header />
           <main className="p-6 overflow-y-auto">{children}</main>

@@ -19,13 +19,9 @@ export interface User {
 }
 
 export interface UserMeta {
-  user_metadata: {
-    email?: string;
-    email_verified?: boolean;
-    full_name?: string;
-    phone_verified?: boolean;
-    sub?: string;
-  };
+  id: string;
+  email: string;
+  full_name: string;
 }
 
 // PROPS __________________________________________________________________________________________________________

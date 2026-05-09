@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LayoutDashboard } from "lucide-react";
 import Calendar from "@/components/Calendar";
 import { CalendarTodo } from "@/lib/types";
 import CalendarModal from "@/components/CalendarModal";
+import { createClient } from "@/lib/supabase/client";
+import { useData } from "@/app/context/DataContext";
 
 interface Activity {
   id: string;
@@ -31,22 +33,35 @@ const mockActivity: Activity[] = [
 ];
 
 export default function Dashboard() {
+  const supabase = createClient();
+  const { currentUser } = useData();
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
-  const [todos, setTodos] = useState<CalendarTodo[]>(() => {
-    if (typeof window === "undefined") return [];
-
+  const [todos, setTodos] = useState<CalendarTodo[]>([]);
+  const hasMounted = useRef<boolean>(false);
+  const fetchTodos = useCallback(async () => {
     try {
-      const stored = localStorage.getItem("calendar-todos");
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      console.error("Invalid storage data");
-      return [];
-    }
-  });
+      const { data, error } = await supabase
+        .from("todos")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("created_at", { ascending: false });
 
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+
+      setTodos(data || []);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [currentUser.id, supabase]);
+  
   useEffect(() => {
-    localStorage.setItem("calendar-todos", JSON.stringify(todos));
-  }, [todos]);
+    if (hasMounted.current) return;
+    fetchTodos();
+    hasMounted.current = true;
+  }, [fetchTodos]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

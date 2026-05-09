@@ -11,6 +11,7 @@ import { CalendarTodo, Priority } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
+import { useData } from "@/app/context/DataContext";
 
 interface Props {
   open: boolean;
@@ -28,7 +29,7 @@ export default function DateDetailsDialog({
   setTodos,
 }: Props) {
   const supabase = createClient();
-
+  const { currentUser } = useData();
   const [openAddTask, setOpenAddTask] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
@@ -78,6 +79,7 @@ export default function DateDetailsDialog({
         .from("todos")
         .insert([
           {
+            user_id: currentUser.id,
             title: newTodo,
             date: date,
             time: newTime,
