@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock, Loader2, LogIn, Mail } from "lucide-react";
 import { SignInProps } from "@/lib/types";
+import { createClient } from "@/lib/supabase/client";
 
 // Animation Variants for the Form Elements
 const containerVariants = {
@@ -28,30 +29,29 @@ export default function SignIn({ setFormType }: SignInProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const supabase = createClient();
+
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
-    const response = await fetch("/api/auth/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
-    const result = await response.json();
-
-    if (!result.success) {
-      toast.error(result.message);
+    if (error) {
+      toast.error(error.message);
       setLoading(false);
       return;
     }
-    setLoading(false);
+
     toast.success("Welcome back!");
+
     router.push("/dashboard");
+
+    setLoading(false);
   }
 
   return (

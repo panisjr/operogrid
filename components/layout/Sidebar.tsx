@@ -261,12 +261,12 @@ export default function Sidebar({ userMeta }: SidebarProps) {
       <div className="px-4 py-4 border-t border-[#FFD3D6]">
         <div className="flex items-center gap-3 bg-[#F9E6E4] p-3 rounded-xl">
           <div className="w-10 h-10 bg-[#FFB0B5] rounded-full flex items-center justify-center text-white font-semibold text-sm shadow">
-            {userMeta?.full_name?.charAt(0) ?? "U"}
+            {userMeta?.user_metadata.full_name?.charAt(0) ?? "U"}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-[#5A3E40] text-sm font-medium truncate">
-                {userMeta?.full_name}
+                {userMeta?.user_metadata.full_name}
               </p>
               {/* <p className="text-[#9C6B6F] text-xs capitalize">
                 {userMeta?.role}

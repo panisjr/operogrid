@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
 import { Search, Bell, MessageSquare, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -12,19 +13,29 @@ export default function Header() {
     day: "numeric",
   });
   const router = useRouter();
-  const handleLogout = async () => {
-    const toastId = toast.loading("Logging out...");
+
+  const supabase = createClient();
+
+  const handleSignOut = async () => {
+    const toastId = toast.loading("Signing out...");
 
     try {
-      await fetch("/api/logout", {
-        method: "POST",
-      });
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        toast.error(error.message, {
+          id: toastId,
+        });
+
+        return;
+      }
 
       toast.success("Logged out successfully", {
         id: toastId,
       });
 
       router.push("/");
+      router.refresh();
     } catch {
       toast.error("Logout failed", {
         id: toastId,
@@ -98,7 +109,7 @@ export default function Header() {
             {today}
           </div>
           <button
-            onClick={handleLogout}
+            onClick={handleSignOut}
             className={`
          flex items-center justify-center gap-3 rounded-xl
         w-10 h-10 bg-[#FFB0B5]
