@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, User, Loader2, UserPlus } from "lucide-react";
 import { SignUpProps } from "@/lib/types";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUp({ setFormType }: SignUpProps) {
@@ -15,7 +14,6 @@ export default function SignUp({ setFormType }: SignUpProps) {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
 
   const supabase = createClient();
 
@@ -55,7 +53,7 @@ export default function SignUp({ setFormType }: SignUpProps) {
 
       setLoading(false);
 
-      router.push("/dashboard");
+      setFormType?.(true);
     } catch {
       setLoading(false);
       toast.error("Something went wrong");
