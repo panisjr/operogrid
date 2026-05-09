@@ -92,7 +92,7 @@ export default function Dashboard() {
           />
         )}
 
-        <div className="bg-[#F9E6E4] border border-[#FFD3D6] rounded-2xl p-6 shadow-sm">
+        <div className="bg-white border border-[#FFD3D6] rounded-2xl p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-[#5A3E40] mb-4">
             Recent Activity
           </h2>
@@ -101,7 +101,7 @@ export default function Dashboard() {
             {mockActivity.map((activity) => (
               <li
                 key={activity.id}
-                className="p-3 rounded-xl bg-[#FFE5E7] border border-[#FFD3D6]"
+                className="p-3 rounded-xl bg-[#FFB0B5]/30 border border-[#FFB0B5]"
               >
                 <p className="text-sm text-[#5A3E40] font-medium">
                   {activity.message}

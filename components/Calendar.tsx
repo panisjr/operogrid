@@ -32,7 +32,7 @@ export default function Calendar({ onOpen }: CalendarProps) {
   return (
     <div
       onClick={onOpen}
-      className="bg-[#F9E6E4] border border-[#FFD3D6] rounded-2xl p-6 shadow-sm"
+      className="bg-white border border-[#FFD3D6] rounded-2xl p-6 shadow-sm"
     >
       {/* Header */}
       <div className="mb-4">

@@ -53,7 +53,7 @@ export default function CalendarModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-7xl! bg-[#FFE5E7]/70 border border-[#FFD3D6] rounded-3xl p-8">
+        <DialogContent className="max-w-7xl! bg-white border border-[#FFD3D6] rounded-3xl p-8">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-[#5A3E40]">
               {today.toLocaleString("default", { month: "long" })} {year}
@@ -65,12 +65,12 @@ export default function CalendarModal({
             <div className="w-full max-h-120 overflow-y-auto">
               <div className="space-y-3">
                 {/* ===== WEEKDAY HEADER ===== */}
-                <div className="grid grid-cols-7 gap-3 text-xs font-semibold text-[#8C6064] uppercase tracking-wide">
+                <div className="grid grid-cols-7 gap-3 text-xs font-bold text-white uppercase tracking-wide">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                     (day) => (
                       <div
                         key={day}
-                        className="text-center py-2 rounded-lg bg-[#F9E6E4]"
+                        className="text-center py-2 rounded-lg bg-[#5A3E40]"
                       >
                         {day}
                       </div>

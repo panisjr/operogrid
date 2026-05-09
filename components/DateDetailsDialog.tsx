@@ -112,38 +112,50 @@ export default function DateDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-xl bg-[#FFE5E7] border border-[#FFD3D6] rounded-3xl p-6">
+        <DialogContent className="max-w-2xl bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl">
+          {/* ===== HEADER ===== */}
           <DialogHeader>
             <div className="flex justify-between items-center">
-              <DialogTitle className="text-lg font-bold text-[#5A3E40]">
-                Tasks for {date}
-              </DialogTitle>
+              <div>
+                <DialogTitle className="text-xl font-bold text-[#5A3E40]">
+                  {new Date(date).toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </DialogTitle>
+                <p className="text-xs text-[#9C6B6F] mt-1">
+                  {todosForDate.length} Tasks
+                </p>
+              </div>
 
               <button
                 onClick={() => setOpenAddTask(true)}
-                className="bg-[#FFB0B5] hover:bg-[#FFC6CA] text-white px-3 py-2 rounded-xl text-sm transition"
+                className="group bg-[#FFB0B5] hover:bg-[#FFC6CA] text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm"
               >
                 + Add Task
               </button>
             </div>
           </DialogHeader>
 
-          <div className="space-y-3 mt-4 max-h-96 overflow-y-auto">
+          {/* ===== TASK LIST ===== */}
+          <div className="space-y-3 mt-6 max-h-105 overflow-y-auto pr-1">
             {todosForDate.length === 0 ? (
-              <p className="text-sm text-[#9C6B6F]">No tasks.</p>
+              <div className="text-center py-10 text-[#9C6B6F] text-sm">
+                No tasks for this day.
+              </div>
             ) : (
               todosForDate.map((todo) => (
                 <div
                   key={todo.id}
                   draggable
                   onDragStart={(e) => e.dataTransfer.setData("taskId", todo.id)}
-                  className={`flex justify-between items-center p-3 rounded-xl border transition-all duration-300
-                  ${
-                    todo.completed
-                      ? "bg-[#FFD3D6]/50 opacity-60"
-                      : "bg-[#F9E6E4]"
-                  }`}
+                  className={`group flex justify-between items-center p-4 rounded-2xl border transition-all duration-300 hover:shadow-md
+              ${
+                todo.completed ? "bg-[#FFD3D6]/40 opacity-70" : "bg-[#ffdcd8]/50 border border-[#fdb9b2]"
+              }`}
                 >
+                  {/* LEFT */}
                   <div className="flex items-center gap-3">
                     <Checkbox
                       checked={todo.completed}
@@ -155,7 +167,8 @@ export default function DateDetailsDialog({
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
                         onBlur={() => saveEdit(todo.id)}
-                        className="px-2 py-1 rounded border"
+                        className="px-2 py-1 rounded-lg border border-[#FFD3D6] bg-white"
+                        autoFocus
                       />
                     ) : (
                       <span
@@ -163,7 +176,7 @@ export default function DateDetailsDialog({
                           setEditingId(todo.id);
                           setEditValue(todo.title);
                         }}
-                        className={`text-sm font-medium ${
+                        className={`text-sm font-medium transition ${
                           todo.completed
                             ? "line-through text-[#9C6B6F]"
                             : "text-[#5A3E40]"
@@ -174,31 +187,41 @@ export default function DateDetailsDialog({
                     )}
                   </div>
 
+                  {/* RIGHT */}
                   <div className="flex items-center gap-2">
+                    {/* Time */}
                     {todo.time && (
-                      <span className="text-xs text-[#9C6B6F]">
+                      <span className="text-xs text-[#9C6B6F] bg-white px-2 py-1 rounded-md border border-[#FFD3D6]">
                         {todo.time}
                       </span>
                     )}
 
-                    <Badge className={`${priorityColors[todo.priority]}`}>
+                    {/* Priority */}
+                    <Badge
+                      className={`${priorityColors[todo.priority]} px-2 py-1 text-xs`}
+                    >
                       {todo.priority}
                     </Badge>
 
+                    {/* Important */}
                     {todo.important && (
-                      <Badge className="bg-[#F9DCC0]">Important</Badge>
+                      <Badge className="bg-[#F9DCC0] text-[#5A3E40] border border-[#FFC6CA] text-xs">
+                        Important
+                      </Badge>
                     )}
 
+                    {/* Toggle Important */}
                     <button
                       onClick={() => toggleImportant(todo.id)}
-                      className="text-xs px-2 py-1 bg-[#FFB0B5] text-white rounded"
+                      className="opacity-70 group-hover:opacity-100 transition text-[#FFB0B5] hover:scale-110"
                     >
                       ★
                     </button>
 
+                    {/* Delete */}
                     <button
                       onClick={() => deleteTodo(todo.id)}
-                      className="text-xs px-2 py-1 bg-red-400 text-white rounded"
+                      className="opacity-70 group-hover:opacity-100 transition text-red-400 hover:scale-110"
                     >
                       ✕
                     </button>
@@ -210,36 +233,46 @@ export default function DateDetailsDialog({
         </DialogContent>
       </Dialog>
       <Dialog open={openAddTask} onOpenChange={setOpenAddTask}>
-        <DialogContent className="max-w-md bg-[#F9E6E4] border border-[#FFD3D6] rounded-3xl p-6">
+        <DialogContent className="max-w-md bg-white rounded-3xl p-8 shadow-lg">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-[#5A3E40]">
-              Add Task ({date})
+              Add Task
             </DialogTitle>
+            <p className="text-xs text-[#9C6B6F] mt-1">
+              {new Date(date).toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
           </DialogHeader>
 
-          <div className="space-y-3 mt-4">
+          <div className="space-y-4 mt-6">
+            {/* Title */}
             <input
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
               placeholder="Task title..."
-              className="w-full px-3 py-2 rounded-lg border border-[#FFD3D6]"
+              className="w-full px-4 py-3 rounded-xl border border-[#FFD3D6] focus:ring-2 focus:ring-[#FFB0B5] outline-none bg-white"
             />
 
+            {/* Time */}
             <input
               type="time"
               value={newTime}
               onChange={(e) => setNewTime(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-[#FFD3D6]"
+              className="w-full px-4 py-3 rounded-xl border border-[#FFD3D6] focus:ring-2 focus:ring-[#FFB0B5] outline-none bg-white"
             />
 
+            {/* Priority */}
             <select
               value={selectedPriority}
               onChange={(e) => setSelectedPriority(e.target.value as Priority)}
-              className="w-full px-3 py-2 rounded-lg border border-[#FFD3D6]"
+              className="w-full px-4 py-3 rounded-xl border border-[#FFD3D6] focus:ring-2 focus:ring-[#FFB0B5] outline-none bg-white"
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="low">Low Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="high">High Priority</option>
             </select>
 
             <button
@@ -247,7 +280,7 @@ export default function DateDetailsDialog({
                 handleAddTodo();
                 setOpenAddTask(false);
               }}
-              className="w-full bg-[#FFB0B5] text-white py-2 rounded-lg hover:bg-[#FFC6CA] transition"
+              className="w-full bg-[#FFB0B5] text-white py-3 rounded-xl font-semibold hover:bg-[#FFC6CA] transition shadow-md cursor-pointer"
             >
               Add Task
             </button>
