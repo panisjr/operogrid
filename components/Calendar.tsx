@@ -2,8 +2,13 @@
 
 interface CalendarProps {
   onOpen: () => void;
+  todos: {
+    id: string;
+    date: string;
+  }[];
 }
-export default function Calendar({ onOpen }: CalendarProps) {
+
+export default function Calendar({ onOpen, todos }: CalendarProps) {
   const today = new Date();
 
   const year = today.getFullYear();
@@ -15,6 +20,18 @@ export default function Calendar({ onOpen }: CalendarProps) {
   const monthName = today.toLocaleString("default", {
     month: "long",
   });
+
+  const formatDate = (day: number) => {
+    const date = new Date(year, month, day);
+
+    return date.toLocaleDateString("en-CA");
+  };
+
+  const getTodoCount = (day: number) => {
+    const formattedDate = formatDate(day);
+    return todos?.filter((todo) => todo.date === formattedDate).length;
+  };
+
   const calendarDays = (): (number | null)[] => {
     const days: (number | null)[] = [];
 
@@ -32,7 +49,7 @@ export default function Calendar({ onOpen }: CalendarProps) {
   return (
     <div
       onClick={onOpen}
-      className="bg-[#F9E6E4] border border-[#FFD3D6] rounded-2xl p-6 shadow-sm"
+      className="bg-white border border-[#FFD3D6] rounded-2xl p-6 shadow-sm"
     >
       {/* Header */}
       <div className="mb-4">
@@ -52,14 +69,14 @@ export default function Calendar({ onOpen }: CalendarProps) {
 
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-2 text-sm">
-       {calendarDays().map((day, index) => {
+        {calendarDays().map((day, index) => {
           const isToday = day === today.getDate();
-
+          const todoCount = day ? getTodoCount(day) : 0;
           return (
             <div
               key={index}
               className={`
-                h-10 flex items-center justify-center rounded-lg
+                relative h-12 flex items-center justify-center rounded-lg
                 ${
                   day
                     ? isToday
@@ -70,6 +87,24 @@ export default function Calendar({ onOpen }: CalendarProps) {
               `}
             >
               {day ?? ""}
+
+              {todoCount > 0 && (
+                <span
+                  className={`
+                    absolute -top-1.25 -right-1.25
+                    min-w-4 h-4
+                    px-1 rounded-full text-[9px]
+                    flex items-center justify-center font-semibold
+                    ${
+                      isToday
+                        ? "bg-white text-[#FF6B81]"
+                        : "bg-[#FF6B81] text-white"
+                    }
+                  `}
+                >
+                  {todoCount}
+                </span>
+              )}
             </div>
           );
         })}
