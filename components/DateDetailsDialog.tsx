@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
 import { useData } from "@/app/context/DataContext";
+import { Star, X } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -49,27 +50,98 @@ export default function DateDetailsDialog({
     high: "bg-red-200 text-red-800",
   };
 
-  const toggleComplete = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-    );
+  const toggleComplete = async (id: string) => {
+    try {
+      const todo = todos.find((t) => t.id === id);
+      if (!todo) return;
+
+      const updatedCompleted = !todo.completed;
+
+      const { error } = await supabase
+        .from("todos")
+        .update({ completed: updatedCompleted })
+        .eq("id", id);
+
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+
+      setTodos((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, completed: updatedCompleted } : t,
+        ),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const toggleImportant = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, important: !t.important } : t)),
-    );
+  const toggleImportant = async (id: string) => {
+    try {
+      const todo = todos.find((t) => t.id === id);
+      if (!todo) return;
+
+      const updatedImportant = !todo.important;
+
+      const { error } = await supabase
+        .from("todos")
+        .update({ important: updatedImportant })
+        .eq("id", id);
+
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+
+      setTodos((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, important: updatedImportant } : t,
+        ),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
+  const deleteTodo = async (id: string) => {
+    try {
+      const { error } = await supabase.from("todos").delete().eq("id", id);
+
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const saveEdit = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, title: editValue } : t)),
-    );
-    setEditingId(null);
+  const saveEdit = async (id: string) => {
+    if (!editValue.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from("todos")
+        .update({ title: editValue })
+        .eq("id", id);
+
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+
+      setTodos((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, title: editValue } : t)),
+      );
+
+      setEditingId(null);
+      setEditValue("");
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleAddTodo = async (): Promise<void> => {
     if (!newTodo.trim()) return;
@@ -112,7 +184,7 @@ export default function DateDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl">
+        <DialogContent className="max-w-2xl! bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl">
           {/* ===== HEADER ===== */}
           <DialogHeader>
             <div className="flex justify-between items-center">
@@ -131,7 +203,7 @@ export default function DateDetailsDialog({
 
               <button
                 onClick={() => setOpenAddTask(true)}
-                className="group bg-[#FFB0B5] hover:bg-[#FFC6CA] text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm"
+                className="group bg-[#FFB0B5] hover:bg-[#FFC6CA] text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm cursor-pointer"
               >
                 + Add Task
               </button>
@@ -152,12 +224,15 @@ export default function DateDetailsDialog({
                   onDragStart={(e) => e.dataTransfer.setData("taskId", todo.id)}
                   className={`group flex justify-between items-center p-4 rounded-2xl border transition-all duration-300 hover:shadow-md
               ${
-                todo.completed ? "bg-[#FFD3D6]/40 opacity-70" : "bg-[#ffdcd8]/50 border border-[#fdb9b2]"
+                todo.completed
+                  ? "bg-[#FFD3D6]/40 opacity-70"
+                  : "bg-[#ffdcd8]/50 border border-[#fdb9b2]"
               }`}
                 >
                   {/* LEFT */}
                   <div className="flex items-center gap-3">
                     <Checkbox
+                      className="border border-[#fdb9b2] cursor-pointer"
                       checked={todo.completed}
                       onCheckedChange={() => toggleComplete(todo.id)}
                     />
@@ -211,20 +286,16 @@ export default function DateDetailsDialog({
                     )}
 
                     {/* Toggle Important */}
-                    <button
+                    <Star
                       onClick={() => toggleImportant(todo.id)}
-                      className="opacity-70 group-hover:opacity-100 transition text-[#FFB0B5] hover:scale-110"
-                    >
-                      ★
-                    </button>
+                      className="shrink-0 w-5 h-5 opacity-70 group-hover:opacity-100 transition text-[#FFB0B5]  hover:scale-110 cursor-pointer"
+                    />
 
                     {/* Delete */}
-                    <button
+                    <X
                       onClick={() => deleteTodo(todo.id)}
-                      className="opacity-70 group-hover:opacity-100 transition text-red-400 hover:scale-110"
-                    >
-                      ✕
-                    </button>
+                      className="shrink-0 w-5 h-5 opacity-70 group-hover:opacity-100 transition text-red-400 hover:scale-110 cursor-pointer"
+                    />
                   </div>
                 </div>
               ))
@@ -233,7 +304,7 @@ export default function DateDetailsDialog({
         </DialogContent>
       </Dialog>
       <Dialog open={openAddTask} onOpenChange={setOpenAddTask}>
-        <DialogContent className="max-w-md bg-white rounded-3xl p-8 shadow-lg">
+        <DialogContent className="max-w-md! bg-white rounded-3xl p-8 shadow-lg">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-[#5A3E40]">
               Add Task

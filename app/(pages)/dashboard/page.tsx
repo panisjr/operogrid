@@ -81,7 +81,7 @@ export default function Dashboard() {
 
       {/* Replace Recent Activity with Calendar + Activity Stack */}
       <div className="space-y-6">
-        <Calendar onOpen={() => setIsCalendarOpen(true)} />
+        <Calendar onOpen={() => setIsCalendarOpen(true)} todos={todos}/>
 
         {isCalendarOpen && (
           <CalendarModal
