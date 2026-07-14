@@ -101,7 +101,7 @@ export default function CalendarModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-7xl! bg-white border border-[#FFD3D6] rounded-3xl p-8">
+        <DialogContent aria-describedby={undefined} className="max-w-7xl! bg-white border border-[#FFD3D6] rounded-3xl p-8">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-center gap-3">
               <Popover>
