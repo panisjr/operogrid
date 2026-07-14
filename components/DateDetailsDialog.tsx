@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
 import { useData } from "@/app/context/DataContext";
 import { Star, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   open: boolean;
@@ -144,7 +145,13 @@ export default function DateDetailsDialog({
     }
   };
   const handleAddTodo = async (): Promise<void> => {
-    if (!newTodo.trim()) return;
+    if (!newTodo.trim() || newTodo === "") {
+      toast.error("Failed to add task!", {
+        description: "Make sure to add task",
+      });
+      setOpenAddTask(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -184,7 +191,10 @@ export default function DateDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent aria-describedby={undefined} className="max-w-2xl! bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-2xl! bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl"
+        >
           {/* ===== HEADER ===== */}
           <DialogHeader>
             <div className="flex justify-between items-center">
@@ -230,7 +240,7 @@ export default function DateDetailsDialog({
               }`}
                 >
                   {/* LEFT */}
-                  <div className="flex items-center gap-3">
+                  <div className="w-full flex items-center gap-3">
                     <Checkbox
                       className="border border-[#fdb9b2] cursor-pointer"
                       checked={todo.completed}
@@ -238,11 +248,11 @@ export default function DateDetailsDialog({
                     />
 
                     {editingId === todo.id ? (
-                      <input
+                      <textarea
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
                         onBlur={() => saveEdit(todo.id)}
-                        className="px-2 py-1 rounded-lg border border-[#FFD3D6] bg-white"
+                        className="w-full h-15 min-h-10 max-h-20 px-2 py-1 rounded-lg border border-[#FFD3D6] bg-white"
                         autoFocus
                       />
                     ) : (
@@ -304,7 +314,10 @@ export default function DateDetailsDialog({
         </DialogContent>
       </Dialog>
       <Dialog open={openAddTask} onOpenChange={setOpenAddTask}>
-        <DialogContent className="max-w-md! bg-white rounded-3xl p-8 shadow-lg">
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-md! bg-white rounded-3xl p-8 shadow-lg"
+        >
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-[#5A3E40]">
               Add Task
@@ -320,11 +333,11 @@ export default function DateDetailsDialog({
 
           <div className="space-y-4 mt-6">
             {/* Title */}
-            <input
+            <textarea
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
-              placeholder="Task title..."
-              className="w-full px-4 py-3 rounded-xl border border-[#FFD3D6] focus:ring-2 focus:ring-[#FFB0B5] outline-none bg-white"
+              placeholder="Sample task here..."
+              className="w-full px-4 py-3 rounded-xl h-15 min-h-10 max-h-20 border border-[#FFD3D6] focus:ring-2 focus:ring-[#FFB0B5] outline-none bg-white"
             />
 
             {/* Time */}
@@ -349,7 +362,6 @@ export default function DateDetailsDialog({
             <button
               onClick={() => {
                 handleAddTodo();
-                setOpenAddTask(false);
               }}
               className="w-full bg-[#FFB0B5] text-white py-3 rounded-xl font-semibold hover:bg-[#FFC6CA] transition shadow-md cursor-pointer"
             >
