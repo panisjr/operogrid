@@ -29,11 +29,11 @@ export default function CalendarModal({
   setTodos,
 }: CalendarModalProps) {
   const today = new Date();
-  const [displayDate, setDisplayDate] = useState(today);
+  const [displayDate, setDisplayDate] = useState<Date>(today);
   const [selectedDate, setSelectedDate] = useState<string>(
     today.toLocaleDateString("en-CA"),
   );
-  const [isDateDialogOpen, setIsDateDialogOpen] = useState(false);
+  const [isDateDialogOpen, setIsDateDialogOpen] = useState<boolean>(false);
   const year = displayDate.getFullYear();
   const month = displayDate.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
