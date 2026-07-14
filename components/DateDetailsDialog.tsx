@@ -184,7 +184,7 @@ export default function DateDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl! bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl">
+        <DialogContent aria-describedby={undefined} className="max-w-2xl! bg-white backdrop-blur-xl border border-white rounded-3xl p-8 shadow-xl">
           {/* ===== HEADER ===== */}
           <DialogHeader>
             <div className="flex justify-between items-center">
